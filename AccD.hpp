@@ -13,8 +13,8 @@
  */	
 namespace utility{
 template<unsigned int D>
-using VecD = std::array<RealT, D>;
-using AccT= boost::accumulators::accumulator_set<RealT, boost::accumulators::stats<boost::accumulators::tag::mean> >;
+using VecD = std::array<double, D>;
+using AccT= boost::accumulators::accumulator_set<double, boost::accumulators::stats<boost::accumulators::tag::mean> >;
 
 /*!	this namespace is needed to avoid partial specialization of member functions inside AccD
  *	the static member expandLoop recursivly opens loops over all dimension
@@ -24,10 +24,10 @@ namespace detail
 	template<unsigned int D, unsigned int ND>
 	struct Internal
 	{
-		static void expandLoop(RealT (*integrand)(VecD<D> x),const VecD<D> &min,const VecD<D> &incs, const std::array<unsigned long, D> &N,\
+		static void expandLoop(double (*integrand)(VecD<D> x),const VecD<D> &min,const VecD<D> &incs, const std::array<unsigned long, D> &N,\
 						VecD<D> &xVec, AccT &acc)
 		{
-			RealT xi=min[ND];
+			double xi=min[ND];
 			for(unsigned int n=0; n<N;n++)
 			{
 				xVec[ND] = xi;
@@ -40,10 +40,10 @@ namespace detail
 	template<unsigned int D>
 	struct Internal<D,0>
 	{
-		static void expandLoop(RealT (*integrand)(VecD<D> x),const VecD<D> &min,const VecD<D> &incs, const std::array<unsigned long, D> &N,\
+		static void expandLoop(double (*integrand)(VecD<D> x),const VecD<D> &min,const VecD<D> &incs, const std::array<unsigned long, D> &N,\
 							VecD<D> &xVec, AccT &acc)
 		{
-			RealT xi=min[0];
+			double xi=min[0];
 			for(unsigned int n=0; n<N;n++)
 			{
 				xVec[0] = xi;
@@ -61,7 +61,7 @@ class AccD
 		template<unsigned int Di, unsigned int NDi>
 		using expL = detail::Internal<Di,NDi>;
 		//TODO: 2 test types: 3 or 4 known sums, mean over >1000 VERY large OR mean over >MAXINT number of samples numbers (check for overflow)
-				RealT expandLoop(RealT (*integrand)(VecD<D> x), const VecD<D> &min, const VecD<D> &max, const std::array<unsigned long, D> &N) const
+				double expandLoop(double (*integrand)(VecD<D> x), const VecD<D> &min, const VecD<D> &max, const std::array<unsigned long, D> &N) const
 		{
 			AccT acc;		// accumulate mean (1/N sum_x1 ... sum_xD f(x1,...,xD))
 			std::bitset<D> stage(0);												// this is needed to emulate nested loops
